@@ -2,10 +2,17 @@
 import { useContext, useEffect, useRef } from 'react';
 import rough from 'roughjs';
 import boardContext from '../../store/board-context';
+import { TOOL_ACTION_TYPES } from '../../constants';
 
 function Board () {
   const canvasRef = useRef();
-  const {elements,boardMouseDownHandler}= useContext(boardContext);
+  const 
+  {elements,
+    boardMouseDownHandler,
+   boardMouseMoveHandler, 
+   toolActionType,
+   boardMouseUpHandler,
+  }= useContext(boardContext);
   // to select the canvas 
   useEffect(()=>{
 const canvas = canvasRef.current; // to select the canvas 
@@ -33,14 +40,27 @@ context.clearRect(0,0,canvas.width, canvas.height);
   },[elements])
 
 // get the points of where we click 
-const handleBoardMouseDown = (event)=> {
+const handleMouseDown = (event)=> {
 boardMouseDownHandler(event);
   }
+const handleMouseMove= (event)=>{
+  if(toolActionType===TOOL_ACTION_TYPES.DRAWING){
+boardMouseMoveHandler(event);
+  }
 
+}
+const handleMouseUp= ()=>{
+boardMouseUpHandler();
+  
+
+}
 
   return (
     <div className="Board" >
-      <canvas  ref = {canvasRef} onMouseDown={handleBoardMouseDown}/>
+      <canvas  ref = {canvasRef} onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      />
       {/* <h1>White board app </h1> */}
     </div>
   );

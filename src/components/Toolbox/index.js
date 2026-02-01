@@ -7,13 +7,13 @@ import { TOOL_ITEMS } from '../../constants';
 import boardContext from '../../store/board-context';
 const Toolbox = () => {
   // const [activeToolItem, setActiveToolItem] = useState("LINE");
-  const {activeToolItem, handleToolItemClick} = useContext(boardContext);
+  const {activeToolItem, changeToolHandler} = useContext(boardContext);
   return (
     // icon 1
     <div className= {classes.container}>
       <div
        className={ cx( classes.toolItem,{[classes.active]:activeToolItem===TOOL_ITEMS.LINE})}
-       onClick={()=> handleToolItemClick(TOOL_ITEMS.LINE)}
+       onClick={()=> changeToolHandler(TOOL_ITEMS.LINE)}
        >
         <FaSlash></FaSlash>
         </div>
@@ -21,7 +21,7 @@ const Toolbox = () => {
 
         <div
          className={cx( classes.toolItem,{[classes.active]:activeToolItem===TOOL_ITEMS.RECTANGLE})}
-         onClick={()=> handleToolItemClick(TOOL_ITEMS.RECTANGLE)}
+         onClick={()=> changeToolHandler(TOOL_ITEMS.RECTANGLE)}
          >
           <LuRectangleHorizontal></LuRectangleHorizontal>
           </div>
