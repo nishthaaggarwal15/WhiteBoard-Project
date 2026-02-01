@@ -1,11 +1,15 @@
 import Board from "./components/Board";
 import Toolbox from "./components/Toolbox";
+import BoardProvider from "./store/BoardProvider";
 
 function App() {
  return( 
  <>
-    <Toolbox/>
+ <BoardProvider>
+ <Toolbox/>
 <Board/>
+ </BoardProvider>
+   
  </>
   );
 }
