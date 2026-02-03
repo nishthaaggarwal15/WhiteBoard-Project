@@ -1,17 +1,49 @@
 .container {
-  @apply absolute left-1/2 top-5 px-3 py-2 flex rounded border border-gray-400;
-  transform: translateX(-50%);
+  @apply absolute top-1/2 left-5 text-sm border border-gray-400;
+  transform: translateY(-50%);
   box-shadow: 1px 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.toolItem {
-  @apply flex justify-center items-center text-xl p-3 text-black mr-5 last:mr-0;
+.selectOptionContainer {
+  @apply mb-6 last:mb-0 first:pt-5 last:pb-5 px-4;
 }
 
-.toolItem:hover {
-  @apply bg-blue-50 text-gray-700 rounded;
+.toolBoxLabel {
+  @apply block mb-1;
 }
 
-.toolItem.active {
-  @apply bg-blue-200 text-gray-700 rounded;
+.colorsContainer {
+  @apply flex flex-wrap items-center;
+}
+
+.colorBox {
+  @apply inline-block w-5 h-5 rounded mr-1 last:mr-0;
+}
+
+.noFillColorBox {
+  background: linear-gradient(
+      to top left,
+      rgba(255, 0, 0, 0) 0%,
+      rgba(255, 0, 0, 0) calc(50% - 0.8px),
+      rgba(255, 0, 0, 1) 50%,
+      rgba(255, 0, 0, 0) calc(50% + 0.8px),
+      rgba(255, 0, 0, 0) 100%
+    ),
+    linear-gradient(
+      to top right,
+      rgba(255, 0, 0, 0) 0%,
+      rgba(255, 0, 0, 0) calc(50% - 0.8px),
+      rgba(255, 0, 0, 1) 50%,
+      rgba(255, 0, 0, 0) calc(50% + 0.8px),
+      rgba(255, 0, 0, 0) 100%
+    );
+}
+
+.activeColorBox {
+  @apply border border-gray-300;
+  box-shadow: 0 0 0 1px #4a47b1;
+}
+
+.colorPicker {
+  @apply mr-5 w-10 h-10 rounded border-2 border-neutral-400;
 }
