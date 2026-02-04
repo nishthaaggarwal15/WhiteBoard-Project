@@ -1,15 +1,28 @@
 import React, { Children, useReducer } from 'react'
 import toolboxContext from './toolbox-context'
-import { TOOL_ITEMS,COLORS } from '../constants';
+import { TOOL_ITEMS,COLORS, TOOLBOX_ACTIONS } from '../constants';
 function toolboxReducer(state, action){
-    // switch (key) {
-    //     case value:
-            
-    //         break;
-    
-    //     default:
-    //         break;
-    // }
+    switch (action.type) {
+        case TOOLBOX_ACTIONS.CHANGE_STROKE:{
+  const newState = {...state};
+          newState[action.payload.tool].stroke = action.payload.stroke;
+            return newState;
+        }
+        
+             case TOOLBOX_ACTIONS.CHANGE_FILL:{
+  const newState = {...state};
+          newState[action.payload.tool].fill = action.payload.fill;
+            return newState;
+             }
+        
+    case TOOLBOX_ACTIONS.CHANGE_SIZE:{
+     const newState = {...state};
+          newState[action.payload.tool].size = action.payload.size;
+            return newState;
+    }
+        default:
+        return state;
+    }
 }
 const initalToolboxState={
      [TOOL_ITEMS.LINE]: {
@@ -32,12 +45,44 @@ const initalToolboxState={
   },
 }
 
-
 const ToolboxProvider = ({children}) => {
-    const [toolboxState, dispatchToolboxAction]= useReducer(toolboxReducer,initalToolboxState);
-const toolboxContextValue = {
-toolboxState
+  const [toolboxState, dispatchToolboxAction]= useReducer(toolboxReducer,initalToolboxState);
+const changeStrokeHandler= (tool, stroke)=>{
+  dispatchToolboxAction({
+    type:TOOLBOX_ACTIONS.CHANGE_STROKE,
+    payload:{
+      tool,
+      stroke,
+    },
+  });
 };
+
+const changeFillHandler= (tool, fill)=>{
+  dispatchToolboxAction({
+    type:TOOLBOX_ACTIONS.CHANGE_FILL,
+    payload:{
+      tool,
+     fill,
+    },
+  });
+};
+const changeSizeHandler= (tool,size)=>{
+  dispatchToolboxAction({
+    type:TOOLBOX_ACTIONS.CHANGE_SIZE,
+    payload:{
+      tool,
+     size,
+    },
+  });
+};
+const toolboxContextValue = {
+toolboxState,
+changeStroke: changeStrokeHandler,
+changeFill: changeFillHandler,
+changeSize: changeSizeHandler,
+};
+
+
   return (
     <toolboxContext.Provider value = {toolboxContextValue}>
 {children}

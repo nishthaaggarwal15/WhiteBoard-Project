@@ -5,57 +5,82 @@ import { useState } from 'react';
 import rough from "roughjs/bundled/rough.esm";
 import { createRoughElement } from '../utils/element';
 
+// rough generator is used to create sketch-like shapes (it does not draw directly)
 const gen = rough.generator();
 
 const boardReducer= (state,action) =>{
  switch (action.type) {
-    // if we change the tool
+
+  // if we change the tool
     case BOARD_ACTIONS.CHANGE_TOOL:
         return{
             ...state,
-            activeToolItem: action.payload.tool,
+            activeToolItem: action.payload.tool,// keep rest the state same and return the tool we clicked on throught action 
+            // only tool changes, drawings and other state remain the same
         }
 
-        // on draw down
+  // on draw down
     case BOARD_ACTIONS.DRAW_DOWN: {
-  const { clientX, clientY } = action.payload;// extract the x,y axis 
+  const { clientX, clientY,stroke,fill,size } = action.payload;// extract the x,y axis we click on 
+// create rough element of this index , with these axis and type of tool
 const newElement = createRoughElement(
 state.elements.length,
 clientX,
 clientY, 
 clientX,
 clientY,
-{type: state.activeToolItem}
+{type: state.activeToolItem,stroke,fill,size}
   );
     return {
     ...state,
-    toolActionType: TOOL_ACTION_TYPES.DRAWING,
-    elements: [...state.elements, newElement],
+    toolActionType: TOOL_ACTION_TYPES.DRAWING, // return action type to drwaing
+    elements: [...state.elements, newElement],// and add this new element to existing states 
+    // drawing starts here and a new element is added
   };
 }
+
 //on moving the mouse 
 case BOARD_ACTIONS.DRAW_MOVE:{
     if (state.elements.length === 0) return state;
+    // safety check: if nothing exists, do nothing
+
     const { clientX, clientY } = action.payload;
     const newElements = [...state.elements];
+    // create a copy of elements array to avoid mutation
+
    const index = newElements.length - 1;
-   const {x1,y1}= newElements[index];
+   // always update the last drawn element
+
+   const {x1,y1,stroke,fill,size}= newElements[index];
+   // starting point stays same, only ending point changes
+
     const newElement = createRoughElement(index,x1,y1,clientX,clientY,{
      type:state.activeToolItem,
+     stroke,
+     fill,
+     size,
     });
+    // recreate the element with updated mouse position
+
     newElements[index]= newElement;
+    // replace old element with updated one
+
     return {
         ...state,
         elements: newElements,
+        // updated elements array triggers canvas redraw
     };
 }
+
 // on stopping the mouse 
 case  BOARD_ACTIONS.DRAW_UP:{
 return{
     ...state,
     toolActionType: TOOL_ACTION_TYPES.NONE,
+    // drawing stops when mouse is released
 }
 }
+
     default:
         return state;
  }
@@ -64,14 +89,20 @@ return{
 //inital state of board
 const initialBoardState= {
     activeToolItem: TOOL_ITEMS.LINE,
+    // default tool when board loads
+
     toolActionType: TOOL_ACTION_TYPES.NONE,
+    // no action happening initially
+
     elements:[],
+    // stores all drawn elements
 }
 
 // use reducer 
 const BoardProvider = ({children}) => {
     const [boardState, dispatchBoardAction]= useReducer(boardReducer, initialBoardState);
 //   const [activeToolItem, setActiveToolItem] = useState(TOOL_ITEMS.LINE);  
+// useReducer is used instead of useState for complex logic
 
  
 // dispatch functions for every action
@@ -81,22 +112,30 @@ const changeToolHandler = (tool) =>{
       payload:{
         tool,
       }
+      // sends selected tool to reducer
    });
   };
 
-  const boardMouseDownHandler= (event)=>{
+  const boardMouseDownHandler= (event, toolboxState)=>{
     const {clientX, clientY}= event;
+    // mouse position when pressed
+
     dispatchBoardAction({
         type:BOARD_ACTIONS.DRAW_DOWN,
         payload:{
-clientX,
-clientY
+ clientX,
+clientY,
+stroke: toolboxState[boardState.activeToolItem]?.stroke,
+fill : toolboxState[boardState.activeToolItem]?.fill,
+size:toolboxState[boardState.activeToolItem]?.size,
         }
+        // starts drawing at this point
     })
   }
 
   const boardMouseMoveHandler= (event)=>{
  const {clientX, clientY}= event;
+  // mouse position while moving
   
     dispatchBoardAction({
         type: BOARD_ACTIONS.DRAW_MOVE,
@@ -104,6 +143,7 @@ clientY
 clientX,
 clientY
         }
+        // updates current shape while dragging
     })
   }
 
@@ -111,18 +151,26 @@ clientY
   
     dispatchBoardAction({
         type:BOARD_ACTIONS.DRAW_UP,
+        // stops drawing when mouse is released
     })
   }
 
   //context value to pass down to other files
   const boardContextValue = {
     activeToolItem: boardState.activeToolItem,
+    // currently selected tool
+
     elements : boardState.elements,
- toolActionType: boardState.toolActionType,
+    // all drawn elements
+
+    toolActionType: boardState.toolActionType,
+    // tells whether drawing is happening or not
+
     changeToolHandler,
     boardMouseDownHandler,
     boardMouseMoveHandler,
     boardMouseUpHandler,
+    // functions used by board and toolbox components
   };
 
 
@@ -133,6 +181,7 @@ clientY
    value =
     {boardContextValue}>
     {children}
+    {/* all child components can access board state */}
 
    </boardContext.Provider>
   );

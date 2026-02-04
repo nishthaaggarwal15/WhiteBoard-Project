@@ -34,7 +34,7 @@ export const COLORS = {
   BLUE: "#0000ff",
   ORANGE: "#ffa500",
   YELLOW: "#ffff00",
-  WHITE: "#ffffff",
+  WHITE: "#F8F0E3",
 };
 
 export const TOOLBOX_ACTIONS = {
