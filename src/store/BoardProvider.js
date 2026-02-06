@@ -2,6 +2,8 @@ import React, { useReducer } from 'react'
 import boardContext from './board-context'
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
 import { useState } from 'react';
+import { getSvgPathFromStroke,isPointNearElement,} from "../utils/element";
+import getStroke from "perfect-freehand";
 import rough from "roughjs/bundled/rough.esm";
 import { createRoughElement } from '../utils/element';
 
@@ -40,37 +42,44 @@ clientY,
 }
 
 //on moving the mouse 
-case BOARD_ACTIONS.DRAW_MOVE:{
-    if (state.elements.length === 0) return state;
-    // safety check: if nothing exists, do nothing
-
-    const { clientX, clientY } = action.payload;
-    const newElements = [...state.elements];
-    // create a copy of elements array to avoid mutation
-
-   const index = newElements.length - 1;
-   // always update the last drawn element
-
-   const {x1,y1,stroke,fill,size}= newElements[index];
-   // starting point stays same, only ending point changes
-
-    const newElement = createRoughElement(index,x1,y1,clientX,clientY,{
-     type:state.activeToolItem,
-     stroke,
-     fill,
-     size,
-    });
-    // recreate the element with updated mouse position
-
-    newElements[index]= newElement;
-    // replace old element with updated one
-
-    return {
-        ...state,
-        elements: newElements,
-        // updated elements array triggers canvas redraw
-    };
-}
+case BOARD_ACTIONS.DRAW_MOVE: {
+      const { clientX, clientY } = action.payload;
+      const newElements = [...state.elements];
+      const index = state.elements.length - 1;
+      const { type } = newElements[index];
+      switch (type) {
+        case TOOL_ITEMS.LINE:
+        case TOOL_ITEMS.RECTANGLE:
+        case TOOL_ITEMS.CIRCLE:
+        case TOOL_ITEMS.ARROW:
+          const { x1, y1, stroke, fill, size } = newElements[index];
+          const newElement = createRoughElement(index, x1, y1, clientX, clientY, {
+            type: state.activeToolItem,
+            stroke,
+            fill,
+            size,
+          });
+          newElements[index] = newElement;
+          return {
+            ...state,
+            elements: newElements,
+          };
+        case TOOL_ITEMS.BRUSH:
+          newElements[index].points = [
+            ...newElements[index].points,
+            { x: clientX, y: clientY },
+          ];
+          newElements[index].path = new Path2D(
+            getSvgPathFromStroke(getStroke(newElements[index].points))
+          );
+          return {
+            ...state,
+            elements: newElements,
+          };
+        default:
+          throw new Error("Type not recognized");
+      }
+    }
 
 // on stopping the mouse 
 case  BOARD_ACTIONS.DRAW_UP:{
