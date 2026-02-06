@@ -78,10 +78,9 @@ boardMouseDownHandler(event, toolboxState);
   }
 
 const handleMouseMove= (event)=>{
-  if(toolActionType===TOOL_ACTION_TYPES.DRAWING){
+
 boardMouseMoveHandler(event);
 // update drawing only when mouse is pressed
-  }
 
 }
 
@@ -95,6 +94,7 @@ boardMouseUpHandler();
   return (
     <div className="Board" >
       <canvas  ref = {canvasRef} 
+      id="canvas"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

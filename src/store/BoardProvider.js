@@ -14,12 +14,20 @@ const boardReducer= (state,action) =>{
  switch (action.type) {
 
   // if we change the tool
-    case BOARD_ACTIONS.CHANGE_TOOL:
-        return{
-            ...state,
+    case BOARD_ACTIONS.CHANGE_TOOL:{
+ return{
+       ...state,
             activeToolItem: action.payload.tool,// keep rest the state same and return the tool we clicked on throught action 
             // only tool changes, drawings and other state remain the same
         }
+    }
+    
+        case BOARD_ACTIONS.CHANGE_ACTION_TYPE:
+      return {
+        ...state,
+        toolActionType: action.payload.actionType,
+      };
+       
 
   // on draw down
     case BOARD_ACTIONS.DRAW_DOWN: {
@@ -33,7 +41,7 @@ clientX,
 clientY,
 {type: state.activeToolItem,stroke,fill,size}
   );
-    return {
+       return {
     ...state,
     toolActionType: TOOL_ACTION_TYPES.DRAWING, // return action type to drwaing
     elements: [...state.elements, newElement],// and add this new element to existing states 
@@ -82,14 +90,25 @@ case BOARD_ACTIONS.DRAW_MOVE: {
     }
 
 // on stopping the mouse 
-case  BOARD_ACTIONS.DRAW_UP:{
-return{
-    ...state,
-    toolActionType: TOOL_ACTION_TYPES.NONE,
-    // drawing stops when mouse is released
-}
-}
+// case  BOARD_ACTIONS.DRAW_UP:{
+// return{
+//     ...state,
+//     toolActionType: TOOL_ACTION_TYPES.NONE,
+//     // drawing stops when mouse is released
+// }
+// }
+  case BOARD_ACTIONS.ERASE: {
+      const { clientX, clientY } = action.payload;
+      let newElements = [...state.elements];
+      newElements = newElements.filter((element) => {
+        return !isPointNearElement(element, clientX, clientY);
+      });
 
+      return {
+        ...state,
+        elements: newElements,
+      };
+    }
     default:
         return state;
  }
@@ -97,7 +116,7 @@ return{
 
 //inital state of board
 const initialBoardState= {
-    activeToolItem: TOOL_ITEMS.LINE,
+    activeToolItem: TOOL_ITEMS.BRUSH,
     // default tool when board loads
 
     toolActionType: TOOL_ACTION_TYPES.NONE,
@@ -129,6 +148,15 @@ const changeToolHandler = (tool) =>{
     const {clientX, clientY}= event;
     // mouse position when pressed
 
+ if (boardState.activeToolItem === TOOL_ITEMS.ERASER) {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
+        payload: {
+          actionType: TOOL_ACTION_TYPES.ERASING,
+        },
+      });
+      return;
+    }
     dispatchBoardAction({
         type:BOARD_ACTIONS.DRAW_DOWN,
         payload:{
@@ -145,22 +173,37 @@ size:toolboxState[boardState.activeToolItem]?.size,
   const boardMouseMoveHandler= (event)=>{
  const {clientX, clientY}= event;
   // mouse position while moving
-  
-    dispatchBoardAction({
+  if(boardState.toolActionType===TOOL_ACTION_TYPES.DRAWING){
+     dispatchBoardAction({
         type: BOARD_ACTIONS.DRAW_MOVE,
         payload:{
 clientX,
 clientY
         }
         // updates current shape while dragging
-    })
+    });
   }
+  else if(boardState.toolActionType===TOOL_ACTION_TYPES.ERASING){
+ dispatchBoardAction({
+        type: BOARD_ACTIONS.ERASE,
+        payload:{
+clientX,
+clientY,
+        }
+    
+    });
+  }
+   
+  };
 
    const boardMouseUpHandler= ()=>{
   
     dispatchBoardAction({
-        type:BOARD_ACTIONS.DRAW_UP,
+        type:BOARD_ACTIONS.CHANGE_ACTION_TYPE,
         // stops drawing when mouse is released
+        payload:{
+          actionType: TOOL_ACTION_TYPES.NONE,
+        }
     })
   }
 
