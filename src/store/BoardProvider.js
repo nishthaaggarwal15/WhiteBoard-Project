@@ -31,6 +31,9 @@ const boardReducer= (state,action) =>{
 
   // on draw down
     case BOARD_ACTIONS.DRAW_DOWN: {
+       if (state.activeToolItem === TOOL_ITEMS.ERASER) {
+    return state;
+  }
   const { clientX, clientY,stroke,fill,size } = action.payload;// extract the x,y axis we click on 
 // create rough element of this index , with these axis and type of tool
 const newElement = createRoughElement(
@@ -41,16 +44,20 @@ clientX,
 clientY,
 {type: state.activeToolItem,stroke,fill,size}
   );
+  const prevElements = state.elements;
        return {
-    ...state,
-    toolActionType: TOOL_ACTION_TYPES.DRAWING, // return action type to drwaing
-    elements: [...state.elements, newElement],// and add this new element to existing states 
-    // drawing starts here and a new element is added
-  };
+        ...state,
+        toolActionType:
+          state.activeToolItem === TOOL_ITEMS.TEXT
+            ? TOOL_ACTION_TYPES.WRITING
+            : TOOL_ACTION_TYPES.DRAWING,
+        elements: [...prevElements, newElement],
+      };
 }
 
 //on moving the mouse 
 case BOARD_ACTIONS.DRAW_MOVE: {
+    if (state.elements.length === 0) return state;
       const { clientX, clientY } = action.payload;
       const newElements = [...state.elements];
       const index = state.elements.length - 1;
@@ -109,6 +116,23 @@ case BOARD_ACTIONS.DRAW_MOVE: {
         elements: newElements,
       };
     }
+    
+    case BOARD_ACTIONS.CHANGE_TEXT: {
+  const index = state.elements.length - 1;
+  const newElements = [...state.elements];
+
+  newElements[index] = {
+    ...newElements[index],
+    text: action.payload.text,
+  };
+
+  return {
+    ...state,
+    toolActionType: TOOL_ACTION_TYPES.NONE,
+    elements: newElements,
+  };
+}
+
     default:
         return state;
  }
@@ -125,6 +149,8 @@ const initialBoardState= {
     elements:[],
     // stores all drawn elements
 }
+
+
 
 // use reducer 
 const BoardProvider = ({children}) => {
@@ -145,6 +171,7 @@ const changeToolHandler = (tool) =>{
   };
 
   const boardMouseDownHandler= (event, toolboxState)=>{
+   if(boardState.toolActionType===TOOL_ACTION_TYPES.WRITING) return;
     const {clientX, clientY}= event;
     // mouse position when pressed
 
@@ -171,6 +198,7 @@ size:toolboxState[boardState.activeToolItem]?.size,
   }
 
   const boardMouseMoveHandler= (event)=>{
+    if(boardState.toolActionType===TOOL_ACTION_TYPES.WRITING) return;
  const {clientX, clientY}= event;
   // mouse position while moving
   if(boardState.toolActionType===TOOL_ACTION_TYPES.DRAWING){
@@ -197,7 +225,7 @@ clientY,
   };
 
    const boardMouseUpHandler= ()=>{
-  
+  if(boardState.toolActionType===TOOL_ACTION_TYPES.WRITING) return;
     dispatchBoardAction({
         type:BOARD_ACTIONS.CHANGE_ACTION_TYPE,
         // stops drawing when mouse is released
@@ -206,6 +234,14 @@ clientY,
         }
     })
   }
+const textAreaBlurHandler=(text,toolboxState)=>{
+dispatchBoardAction({
+type: BOARD_ACTIONS.CHANGE_TEXT,
+payload:{
+  text,
+}
+})
+}
 
   //context value to pass down to other files
   const boardContextValue = {
@@ -222,6 +258,7 @@ clientY,
     boardMouseDownHandler,
     boardMouseMoveHandler,
     boardMouseUpHandler,
+    textAreaBlurHandler,
     // functions used by board and toolbox components
   };
 

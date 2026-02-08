@@ -4,7 +4,9 @@ import boardContext from '../../store/board-context';
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from '../../constants';
 import toolboxContext from '../../store/toolbox-context';
 
+import classes from "./index.module.css";
 function Board () {
+  const textAreaRef= useRef();
   const canvasRef = useRef();
   // useRef is used to get direct access to the canvas DOM element
 
@@ -14,6 +16,7 @@ function Board () {
    boardMouseMoveHandler, 
    toolActionType,
    boardMouseUpHandler,
+   textAreaBlurHandler,
   }= useContext(boardContext);
   // taking required state and functions from board context
   const {toolboxState}= useContext(toolboxContext);
@@ -55,6 +58,13 @@ elements.forEach(element=>{
               context.fill(element.path);
               context.restore();
               break;
+              case TOOL_ITEMS.TEXT:
+                context.textBaseline = "top";
+          context.font = `${element.size}px Caveat`;
+          context.fillStyle = element.stroke;
+          context.fillText(element.text, element.x1, element.y1);
+          context.restore();
+          break;
               default: 
               throw new Error ("Type Not Recognized");
   }
@@ -71,6 +81,15 @@ context.clearRect(0,0,canvas.width, canvas.height);
   },[elements])
   // this effect runs every time elements array changes
 
+useEffect(()=>{
+const textarea= textAreaRef.current;
+if(toolActionType===TOOL_ACTION_TYPES.WRITING){
+  setTimeout(()=>{
+textarea.focus();
+  },0);
+  
+}
+},[toolActionType]);
 // get the points of where we click 
 const handleMouseDown = (event)=> {
 boardMouseDownHandler(event, toolboxState);
@@ -93,6 +112,22 @@ boardMouseUpHandler();
 
   return (
     <div className="Board" >
+{ toolActionType === TOOL_ACTION_TYPES.WRITING &&
+  elements.length > 0 && (
+    <textarea
+    type ="text"
+    ref= {textAreaRef}
+      className={classes.textElementBox}
+      style={{
+        top: elements[elements.length - 1].y1,
+        left: elements[elements.length - 1].x1,
+        fontSize: `${elements[elements.length - 1]?.size}px`,
+        color: elements[elements.length - 1]?.stroke,
+      }}
+      onBlur={(event)=>textAreaBlurHandler(event.target.value,toolboxState)}
+    />
+)}
+
       <canvas  ref = {canvasRef} 
       id="canvas"
       onMouseDown={handleMouseDown}

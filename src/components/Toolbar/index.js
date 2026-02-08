@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import classes from "./index.module.css"
 import cx from "classnames";
-import { FaArrowRight, FaRegCircle, FaSlash, FaPaintBrush, FaEraser} from 'react-icons/fa';
+import { FaArrowRight, FaRegCircle, FaSlash, FaPaintBrush, FaEraser, FaFont} from 'react-icons/fa';
 import {  LuRectangleHorizontal } from 'react-icons/lu';
 import { TOOL_ITEMS } from '../../constants';
 import boardContext from '../../store/board-context';
@@ -56,6 +56,14 @@ const Toolbar = () => {
          onClick={()=> changeToolHandler(TOOL_ITEMS.ERASER)}
          >
          <FaEraser></FaEraser>
+          </div>
+
+          {/* //icon 7  */}
+           <div
+         className={cx( classes.toolItem,{[classes.active]:activeToolItem===TOOL_ITEMS.TEXT})}
+         onClick={()=> changeToolHandler(TOOL_ITEMS.TEXT)}
+         >
+         <FaFont></FaFont>
           </div>
     </div>
   )

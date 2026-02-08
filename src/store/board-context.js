@@ -8,5 +8,7 @@ boardMouseDownHandler:()=>{},
 changeToolHandler : ()=>{},
 boardMouseMoveHandler:()=>{},
 boardMouseUpHandler:()=>{},
+textAreaBlurHandler:()=>{},
+
 });
 export default boardContext;
