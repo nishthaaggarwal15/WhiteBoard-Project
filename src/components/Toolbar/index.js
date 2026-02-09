@@ -1,13 +1,13 @@
 import React, { useContext, useState } from 'react'
 import classes from "./index.module.css"
 import cx from "classnames";
-import { FaArrowRight, FaRegCircle, FaSlash, FaPaintBrush, FaEraser, FaFont} from 'react-icons/fa';
+import { FaArrowRight, FaRegCircle, FaSlash, FaPaintBrush, FaEraser, FaFont, FaUndoAlt, FaRedoAlt} from 'react-icons/fa';
 import {  LuRectangleHorizontal } from 'react-icons/lu';
 import { TOOL_ITEMS } from '../../constants';
 import boardContext from '../../store/board-context';
 const Toolbar = () => {
   // const [activeToolItem, setActiveToolItem] = useState("LINE");
-  const {activeToolItem, changeToolHandler} = useContext(boardContext);
+  const {activeToolItem, changeToolHandler,undo, redo} = useContext(boardContext);
   return (
     // icon 1
     <div className= {classes.container}>
@@ -65,6 +65,22 @@ const Toolbar = () => {
          >
          <FaFont></FaFont>
           </div>
+          
+           {/* //icon 8  */}
+           <div
+         className={ classes.toolItem}
+         onClick={undo}
+         >
+         <FaUndoAlt></FaUndoAlt>
+          </div>
+           {/* //icon 9  */}
+           <div
+         className={classes.toolItem}
+         onClick={redo}
+         >
+         <FaRedoAlt/>
+          </div>
+
     </div>
   )
 }
