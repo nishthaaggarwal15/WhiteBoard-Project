@@ -1,4 +1,4 @@
-import React, { Children, useReducer } from 'react'
+import React, {  useReducer } from 'react'
 import toolboxContext from './toolbox-context'
 import { TOOL_ITEMS,COLORS, TOOLBOX_ACTIONS } from '../constants';
 function toolboxReducer(state, action){

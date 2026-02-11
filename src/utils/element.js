@@ -1,8 +1,8 @@
-import { BsXSquare } from "react-icons/bs";
+
 import { ARROW_LENGTH, TOOL_ITEMS } from "../constants";
 import rough from "roughjs";
 import getStroke from "perfect-freehand";
-import { getArrowHeadsCoordinates, isPointCloseToLine,isNearPoint } from "./math";
+import { getArrowHeadsCoordinates, isPointCloseToLine } from "./math";
 
 const gen = rough.generator();
 export const createRoughElement= (id,x1,y1,x2,y2,{type,stroke,fill,size})=>{

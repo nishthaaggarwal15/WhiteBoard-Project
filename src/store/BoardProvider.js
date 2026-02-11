@@ -1,14 +1,14 @@
 import React, { useReducer } from 'react'
 import boardContext from './board-context'
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
-import { useState,useCallback } from 'react';
+import { useCallback } from 'react';
 import { getSvgPathFromStroke,isPointNearElement,} from "../utils/element";
 import getStroke from "perfect-freehand";
 import rough from "roughjs";
 import { createRoughElement } from '../utils/element';
 
 // rough generator is used to create sketch-like shapes (it does not draw directly)
-const gen = rough.generator();
+
 
 const boardReducer= (state,action) =>{
  switch (action.type) {

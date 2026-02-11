@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useRef,useCallback } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef} from 'react';
 import rough from 'roughjs';
 import boardContext from '../../store/board-context';
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from '../../constants';
@@ -59,9 +59,6 @@ useEffect(() => {
 
 const roughCanvas = rough.canvas(canvas);
 // roughjs wrapper over normal canvas
-
-const generator = roughCanvas.generator;
-// generator is not used here, but roughCanvas uses it internally
 
 elements.forEach(element=>{
   switch(element.type){
