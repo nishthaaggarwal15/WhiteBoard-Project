@@ -4,7 +4,7 @@ import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
 import { useState,useCallback } from 'react';
 import { getSvgPathFromStroke,isPointNearElement,} from "../utils/element";
 import getStroke from "perfect-freehand";
-import rough from "roughjs/bundled/rough.esm";
+import rough from "roughjs";
 import { createRoughElement } from '../utils/element';
 
 // rough generator is used to create sketch-like shapes (it does not draw directly)

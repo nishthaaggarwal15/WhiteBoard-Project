@@ -1,6 +1,6 @@
 import { BsXSquare } from "react-icons/bs";
 import { ARROW_LENGTH, TOOL_ITEMS } from "../constants";
-import rough from "roughjs/bundled/rough.esm";
+import rough from "roughjs";
 import getStroke from "perfect-freehand";
 import { getArrowHeadsCoordinates, isPointCloseToLine,isNearPoint } from "./math";
 
