@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react'
 import boardContext from './board-context'
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
-import { useState } from 'react';
+import { useState,useCallback } from 'react';
 import { getSvgPathFromStroke,isPointNearElement,} from "../utils/element";
 import getStroke from "perfect-freehand";
 import rough from "roughjs/bundled/rough.esm";
@@ -268,25 +268,25 @@ clientY,
     })
   }
 
-const textAreaBlurHandler=(text,toolboxState)=>{
+const textAreaBlurHandler=(text)=>{
 dispatchBoardAction({
 type: BOARD_ACTIONS.CHANGE_TEXT,
 payload:{
   text,
-}
-})
-}
-const boardUndoHandler=()=>{
-  dispatchBoardAction({
-    type: BOARD_ACTIONS.UNDO,
-  })
-}
+},
+});
+};
+  const boardUndoHandler = useCallback(() => {
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.UNDO,
+    });
+  }, []);
 
-const boardRedoHandler=()=>{
-  dispatchBoardAction({
-    type: BOARD_ACTIONS.REDO,
-  })
-}
+  const boardRedoHandler = useCallback(() => {
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.REDO,
+    });
+  }, []);
   //context value to pass down to other files
   const boardContextValue = {
     activeToolItem: boardState.activeToolItem,

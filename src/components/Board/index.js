@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useRef } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef,useCallback } from 'react';
 import rough from 'roughjs';
 import boardContext from '../../store/board-context';
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from '../../constants';
@@ -17,6 +17,9 @@ function Board () {
    toolActionType,
    boardMouseUpHandler,
    textAreaBlurHandler,
+   undo,
+   redo,
+
   }= useContext(boardContext);
   // taking required state and functions from board context
   const {toolboxState}= useContext(toolboxContext);
@@ -30,6 +33,21 @@ canvas.height = window.innerHeight;
 
 },[])
 
+useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.ctrlKey && event.key === "z") {
+        undo();
+      } else if (event.ctrlKey && event.key === "y") {
+        redo();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [undo, redo]);
 // to draw the rough canvas 
   useLayoutEffect(()=>{
     const canvas = canvasRef.current;
@@ -124,7 +142,7 @@ boardMouseUpHandler();
         fontSize: `${elements[elements.length - 1]?.size}px`,
         color: elements[elements.length - 1]?.stroke,
       }}
-      onBlur={(event)=>textAreaBlurHandler(event.target.value,toolboxState)}
+      onBlur={(event)=>textAreaBlurHandler(event.target.value)}
     />
 )}
 
